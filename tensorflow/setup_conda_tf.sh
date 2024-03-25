@@ -5,18 +5,21 @@ count="$(wc -l tf_conda.list | cut -f 1 -d' ')"
 n=""
 while true; do
     read -p 'Select option: ' n
-    # If $n is an integer between one and $count...
-    if [ "$n" -eq "$n" ] && [ "$n" -gt 0 ] && [ "$n" -le "$count" ]; then
+    if ! [[ $n =~ ^[0-9]+$ ]]; then
+        echo "Invalid input: not a number."
+    elif [ "$n" -gt 0 ] && [ "$n" -le "$count" ]; then
         break
+    else
+        echo "Invalid input: number out of range."
     fi
 done
 value="$(sed -n "${n}p" tf_conda.list)"
 echo "TensorFlow $value will now be installed in a GPU enabled conda environment."
 
-TF_VER=`cut -d ' ' -f 1 <<< $value`
-CUDNN_VER=`cut -d ' ' -f 3 <<< $value`
-CUDA_VER=`cut -d ' ' -f 5 <<< $value`
-PY_VER=`cut -d ' ' -f 7 <<< $value`
+TF_VER=$(cut -d ' ' -f 1 <<< $value)
+CUDNN_VER=$(cut -d ' ' -f 3 <<< $value)
+CUDA_VER=$(cut -d ' ' -f 5 <<< $value)
+PY_VER=$(cut -d ' ' -f 7 <<< $value)
 
 cat << EOF > tf${TF_VER//./}conda_env.yaml
 name: tf${TF_VER//./}gpu_conda

@@ -5,9 +5,12 @@ count="$(wc -l pt_conda.list | cut -f 1 -d' ')"
 n=""
 while true; do
     read -p 'Select option: ' n
-    # If $n is an integer between one and $count...
-    if [ "$n" -eq "$n" ] && [ "$n" -gt 0 ] && [ "$n" -le "$count" ]; then
+    if ! [[ $n =~ ^[0-9]+$ ]]; then
+        echo "Invalid input: not a number."
+    elif [ "$n" -gt 0 ] && [ "$n" -le "$count" ]; then
         break
+    else
+        echo "Invalid input: number out of range."
     fi
 done
 value=( $(sed -n "${n}p" pt_conda.list) )
